@@ -226,12 +226,9 @@ it.skipIf(process.platform !== "win32")(
       }),
     );
     const client = { name: "kimi", format: "kimi", configPath } as const;
+    const command = currentClientRegistrationCommand();
     expect(
-      await configureClientConfiguration(
-        client,
-        {},
-        currentClientRegistrationCommand({ platform: process.platform }),
-      ),
+      await configureClientConfiguration(client, {}, command),
     ).toMatchObject({ status: "configured" });
     const parsed = parseClientConfiguration(
       await readFile(configPath, "utf8"),
@@ -240,7 +237,7 @@ it.skipIf(process.platform !== "win32")(
     expect(effectiveClientServer(parsed, "rea")).toHaveProperty("env", {
       rea_mcp_input_schema_profile: "full",
     });
-    const statuses = await readClientRegistrationStatuses(home, "rea", {
+    const statuses = await readClientRegistrationStatuses(home, command[1], {
       environment: {},
     });
     expect(statuses.find(({ client }) => client === "kimi")).toMatchObject({
